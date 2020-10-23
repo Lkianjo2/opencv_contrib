@@ -72,7 +72,7 @@ void cv::viz::vtkOBJWriter::WriteData()
     }
 
     vtkDebugMacro(<<"Opening vtk file for writing...");
-    std::ostream *outfilep = new std::ofstream(this->FileName, ios::out);
+    ostream *outfilep = new ofstream(this->FileName, ios::out);
     if (outfilep->fail())
     {
         vtkErrorMacro(<< "Unable to open file: "<< this->FileName);
@@ -127,8 +127,7 @@ void cv::viz::vtkOBJWriter::WriteData()
     // write out verts if any
     if (input->GetNumberOfVerts() > 0)
     {
-        vtkIdType npts = 0;
-        CellIterT index = 0;
+        vtkIdType npts = 0, *index = 0;
         vtkCellArray *cells = input->GetVerts();
         for (cells->InitTraversal(); cells->GetNextCell(npts, index); )
         {
@@ -142,8 +141,7 @@ void cv::viz::vtkOBJWriter::WriteData()
     // write out lines if any
     if (input->GetNumberOfLines() > 0)
     {
-        vtkIdType npts = 0;
-        CellIterT index = 0;
+        vtkIdType npts = 0, *index = 0;
         vtkCellArray *cells = input->GetLines();
         for (cells->InitTraversal(); cells->GetNextCell(npts, index); )
         {
@@ -164,8 +162,7 @@ void cv::viz::vtkOBJWriter::WriteData()
     // write out polys if any
     if (input->GetNumberOfPolys() > 0)
     {
-        vtkIdType npts = 0;
-        CellIterT index = 0;
+        vtkIdType npts = 0, *index = 0;
         vtkCellArray *cells = input->GetPolys();
         for (cells->InitTraversal(); cells->GetNextCell(npts, index); )
         {
@@ -194,8 +191,7 @@ void cv::viz::vtkOBJWriter::WriteData()
     // write out tstrips if any
     if (input->GetNumberOfStrips() > 0)
     {
-        vtkIdType npts = 0;
-        CellIterT index = 0;
+        vtkIdType npts = 0, *index = 0;
         vtkCellArray *cells = input->GetStrips();
         for (cells->InitTraversal(); cells->GetNextCell(npts, index); )
         {

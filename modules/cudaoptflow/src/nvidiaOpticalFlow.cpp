@@ -8,11 +8,11 @@
 
 #if !defined HAVE_CUDA || defined(CUDA_DISABLER)
 
-cv::Ptr<cv::cuda::NvidiaOpticalFlow_1_0> cv::cuda::NvidiaOpticalFlow_1_0::create(int, int, NVIDIA_OF_PERF_LEVEL, bool, bool, bool, int, Stream&, Stream&) { throw_no_cuda(); return cv::Ptr<cv::cuda::NvidiaOpticalFlow_1_0>(); }
+cv::Ptr<cv::cuda::NvidiaOpticalFlow_1_0> cv::cuda::NvidiaOpticalFlow_1_0::create(int, int, NVIDIA_OF_PERF_LEVEL, bool, bool, bool, int) { throw_no_cuda(); return cv::Ptr<cv::cuda::NvidiaOpticalFlow_1_0>(); }
 
 #elif !defined HAVE_NVIDIA_OPTFLOW
 
-cv::Ptr<cv::cuda::NvidiaOpticalFlow_1_0> cv::cuda::NvidiaOpticalFlow_1_0::create(int, int, NVIDIA_OF_PERF_LEVEL, bool, bool, bool, int, Stream&, Stream&)
+cv::Ptr<cv::cuda::NvidiaOpticalFlow_1_0> cv::cuda::NvidiaOpticalFlow_1_0::create(int, int, NVIDIA_OF_PERF_LEVEL, bool, bool, bool, int)
 {
     CV_Error(cv::Error::HeaderIsNull, "OpenCV was build without NVIDIA OpticalFlow support");
 }
@@ -236,8 +236,6 @@ private:
     bool m_enableExternalHints;
     bool m_enableCostBuffer;
     int m_gpuId;
-    Stream m_inputStream;
-    Stream m_outputStream;
 
     CUcontext m_cuContext;
     NV_OF_BUFFER_FORMAT m_format;
@@ -288,13 +286,12 @@ protected:
     std::mutex m_lock;
 
 public:
-    NvidiaOpticalFlowImpl(int width, int height, NV_OF_PERF_LEVEL perfPreset, bool bEnableTemporalHints,
-        bool bEnableExternalHints, bool bEnableCostBuffer, int gpuId, Stream inputStream, Stream outputStream);
+    NvidiaOpticalFlowImpl(int width, int height, NV_OF_PERF_LEVEL perfPreset,
+        bool bEnableTemporalHints, bool bEnableExternalHints, bool bEnableCostBuffer, int gpuId);
 
     virtual void calc(InputArray inputImage, InputArray referenceImage,
         InputOutputArray flow, Stream& stream = Stream::Null(),
         InputArray hint = cv::noArray(), OutputArray cost = cv::noArray());
-
 
     virtual void collectGarbage();
 
@@ -306,13 +303,11 @@ public:
 
 NvidiaOpticalFlowImpl::NvidiaOpticalFlowImpl(
     int width, int height, NV_OF_PERF_LEVEL perfPreset, bool bEnableTemporalHints,
-    bool bEnableExternalHints, bool bEnableCostBuffer, int gpuId,
-    Stream inputStream, Stream outputStream) :
+    bool bEnableExternalHints, bool bEnableCostBuffer, int gpuId) :
     m_width(width), m_height(height), m_preset(perfPreset),
     m_enableTemporalHints((NV_OF_BOOL)bEnableTemporalHints),
     m_enableExternalHints((NV_OF_BOOL)bEnableExternalHints),
     m_enableCostBuffer((NV_OF_BOOL)bEnableCostBuffer), m_gpuId(gpuId),
-    m_inputStream(inputStream), m_outputStream(outputStream),
     m_cuContext(nullptr), m_format(NV_OF_BUFFER_FORMAT_GRAYSCALE8),
     m_gridSize(NV_OF_OUTPUT_VECTOR_GRID_SIZE_4)
 {
@@ -392,12 +387,6 @@ NvidiaOpticalFlowImpl::NvidiaOpticalFlowImpl(
 
     NVOF_API_CALL(GetAPI()->nvOFInit(GetHandle(), &m_initParams));
 
-    if (m_inputStream || m_outputStream)
-    {
-        NVOF_API_CALL(GetAPI()->nvOFSetIOCudaStreams(GetHandle(),
-            StreamAccessor::getStream(m_inputStream), StreamAccessor::getStream(m_outputStream)));
-    }
-
     //Input Buffer 1
     NVOF_API_CALL(GetAPI()->nvOFCreateGPUBufferCuda(GetHandle(),
         &m_inputBufferDesc, NV_OF_CUDA_BUFFER_TYPE_CUDEVICEPTR, &m_hInputBuffer));
@@ -443,12 +432,13 @@ NvidiaOpticalFlowImpl::NvidiaOpticalFlowImpl(
 void NvidiaOpticalFlowImpl::calc(InputArray _frame0, InputArray _frame1, InputOutputArray _flow,
     Stream& stream, InputArray hint, OutputArray cost)
 {
-    if (stream && !m_inputStream)
-    {
-        m_inputStream = stream;
-        NVOF_API_CALL(GetAPI()->nvOFSetIOCudaStreams(GetHandle(),
-            StreamAccessor::getStream(m_inputStream), StreamAccessor::getStream(m_outputStream)));
-    }
+    Stream inputStream = {};
+    Stream outputStream = {};
+    if (stream)
+        inputStream = stream;
+
+    NVOF_API_CALL(GetAPI()->nvOFSetIOCudaStreams(GetHandle(),
+        StreamAccessor::getStream(inputStream), StreamAccessor::getStream(outputStream)));
 
     GpuMat frame0GpuMat(_frame0.size(), _frame0.type(), (void*)m_frame0cuDevPtr,
         m_inputBufferStrideInfo.strideInfo[0].strideXInBytes);
@@ -462,14 +452,12 @@ void NvidiaOpticalFlowImpl::calc(InputArray _frame0, InputArray _frame1, InputOu
     if (_frame0.isMat())
     {
         //Get Mats from InputArrays
-        Mat __frame0 = _frame0.getMat();
-        frame0GpuMat.upload(__frame0, m_inputStream);
+        frame0GpuMat.upload(_frame0);
     }
     else if (_frame0.isGpuMat())
     {
         //Get GpuMats from InputArrays
-        GpuMat __frame0 = _frame0.getGpuMat();
-        __frame0.copyTo(frame0GpuMat, m_inputStream);
+        _frame0.copyTo(frame0GpuMat);
     }
     else
     {
@@ -481,14 +469,12 @@ void NvidiaOpticalFlowImpl::calc(InputArray _frame0, InputArray _frame1, InputOu
     if (_frame1.isMat())
     {
         //Get Mats from InputArrays
-        Mat __frame1 = _frame1.getMat();
-        frame1GpuMat.upload(__frame1, m_inputStream);
+        frame1GpuMat.upload(_frame1);
     }
     else if (_frame1.isGpuMat())
     {
         //Get GpuMats from InputArrays
-        GpuMat __frame1 = _frame1.getGpuMat();
-        __frame1.copyTo(frame1GpuMat, m_inputStream);
+        _frame1.copyTo(frame1GpuMat);
     }
     else
     {
@@ -504,20 +490,20 @@ void NvidiaOpticalFlowImpl::calc(InputArray _frame0, InputArray _frame1, InputOu
         if (hint.isMat())
         {
             //Get Mat from InputArray hint
-            Mat _hint = hint.getMat();
-            hintGpuMat.upload(_hint, m_inputStream);
+            hintGpuMat.upload(hint);
         }
         else if(hint.isGpuMat())
         {
             //Get GpuMat from InputArray hint
-            GpuMat _hint = hint.getGpuMat();
-            _hint.copyTo(hintGpuMat, m_inputStream);
+            hint.copyTo(hintGpuMat);
         }
         else
         {
             CV_Error(Error::StsBadArg,"Incorrect hint buffer passed. Pass Mat or GpuMat");
         }
     }
+
+    inputStream.waitForCompletion();
 
     //Execute Call
     NV_OF_EXECUTE_INPUT_PARAMS exeInParams;
@@ -532,13 +518,15 @@ void NvidiaOpticalFlowImpl::calc(InputArray _frame0, InputArray _frame1, InputOu
     memset(&exeOutParams, 0, sizeof(exeOutParams));
     exeOutParams.outputBuffer = m_hOutputBuffer;
     exeOutParams.outputCostBuffer = m_initParams.enableOutputCost == NV_OF_TRUE ?
-        m_hCostBuffer : nullptr;
+        m_hCostBuffer : nullptr;;
     NVOF_API_CALL(GetAPI()->nvOFExecute(GetHandle(), &exeInParams, &exeOutParams));
 
+    outputStream.waitForCompletion();
+
     if (_flow.isMat())
-        flowXYGpuMat.download(_flow, m_outputStream);
+        flowXYGpuMat.download(_flow);
     else if(_flow.isGpuMat())
-        flowXYGpuMat.copyTo(_flow, m_outputStream);
+        flowXYGpuMat.copyTo(_flow);
     else
         CV_Error(Error::StsBadArg, "Incorrect flow buffer passed. Pass Mat or GpuMat");
 
@@ -549,13 +537,13 @@ void NvidiaOpticalFlowImpl::calc(InputArray _frame0, InputArray _frame1, InputOu
             m_costBufferStrideInfo.strideInfo[0].strideXInBytes);
 
         if (cost.isMat())
-            costGpuMat.download(cost, m_outputStream);
+            costGpuMat.download(cost);
         else if(cost.isGpuMat())
-            costGpuMat.copyTo(cost, m_outputStream);
+            costGpuMat.copyTo(cost);
         else
             CV_Error(Error::StsBadArg, "Incorrect cost buffer passed. Pass Mat or GpuMat");
     }
-    m_outputStream.waitForCompletion();
+    cuSafeCall(cudaDeviceSynchronize());
 }
 
 void NvidiaOpticalFlowImpl::collectGarbage()
@@ -586,14 +574,6 @@ void NvidiaOpticalFlowImpl::collectGarbage()
             NVOF_API_CALL(GetAPI()->nvOFDestroyGPUBufferCuda(m_hCostBuffer));
         }
     }
-    if (m_inputStream)
-    {
-        m_inputStream.waitForCompletion();
-    }
-    if (m_outputStream)
-    {
-        m_outputStream.waitForCompletion();
-    }
     if (m_hOF)
     {
         NVOF_API_CALL(GetAPI()->nvOFDestroy(m_hOF));
@@ -606,8 +586,7 @@ void NvidiaOpticalFlowImpl::upSampler(InputArray _flow, int width, int height,
     Mat flow;
     if (_flow.isMat())
     {
-        Mat __flow = _flow.getMat();
-        __flow.copyTo(flow);
+        _flow.copyTo(flow);
     }
     else if (_flow.isGpuMat())
     {
@@ -661,8 +640,7 @@ void NvidiaOpticalFlowImpl::upSampler(InputArray _flow, int width, int height,
 Ptr<cv::cuda::NvidiaOpticalFlow_1_0> cv::cuda::NvidiaOpticalFlow_1_0::create(
     int width, int height, NVIDIA_OF_PERF_LEVEL perfPreset,
     bool bEnableTemporalHints, bool bEnableExternalHints,
-    bool bEnableCostBuffer, int gpuId,
-    Stream& inputStream, Stream& outputStream)
+    bool bEnableCostBuffer, int gpuId)
 {
     return makePtr<NvidiaOpticalFlowImpl>(
         width,
@@ -671,8 +649,6 @@ Ptr<cv::cuda::NvidiaOpticalFlow_1_0> cv::cuda::NvidiaOpticalFlow_1_0::create(
         bEnableTemporalHints,
         bEnableExternalHints,
         bEnableCostBuffer,
-        gpuId,
-        inputStream,
-        outputStream);
+        gpuId);
 }
 #endif

@@ -22,6 +22,7 @@ public:
                                    InputArray oldPoints, InputArray oldNormals,
                                    InputArray newPoints, InputArray newNormals
                                    ) const = 0;
+
     virtual ~ICP() { }
 
 protected:

@@ -9,7 +9,6 @@
 
 #include "opencv2/core.hpp"
 #include "opencv2/core/affine.hpp"
-#include <opencv2/rgbd/volume.hpp>
 
 namespace cv {
 namespace kinfu {
@@ -24,22 +23,22 @@ struct CV_EXPORTS_W Params
     /**
      * @brief Constructor for Params
      * Sets the initial pose of the TSDF volume.
-     * @param volumeInitialPoseRot rotation matrix
-     * @param volumeInitialPoseTransl translation vector
+     * @param volumeIntialPoseRot rotation matrix
+     * @param volumeIntialPoseTransl translation vector
      */
-    CV_WRAP Params(Matx33f volumeInitialPoseRot, Vec3f volumeInitialPoseTransl)
+    CV_WRAP Params(Matx33f volumeIntialPoseRot, Vec3f volumeIntialPoseTransl)
     {
-      setInitialVolumePose(volumeInitialPoseRot,volumeInitialPoseTransl);
+      setInitialVolumePose(volumeIntialPoseRot,volumeIntialPoseTransl);
     }
 
     /**
      * @brief Constructor for Params
      * Sets the initial pose of the TSDF volume.
-     * @param volumeInitialPose 4 by 4 Homogeneous Transform matrix to set the intial pose of TSDF volume
+     * @param volumeIntialPose 4 by 4 Homogeneous Transform matrix to set the intial pose of TSDF volume
      */
-    CV_WRAP Params(Matx44f volumeInitialPose)
+    CV_WRAP Params(Matx44f volumeIntialPose)
     {
-      setInitialVolumePose(volumeInitialPose);
+      setInitialVolumePose(volumeIntialPose);
     }
 
     /**
@@ -69,15 +68,8 @@ struct CV_EXPORTS_W Params
     */
     CV_WRAP static Ptr<Params> coarseParams();
 
-    /** @brief HashTSDF parameters
-      A set of parameters suitable for use with HashTSDFVolume
-    */
-    CV_WRAP static Ptr<Params> hashTSDFParams(bool isCoarse);
-
     /** @brief frame size in pixels */
     CV_PROP_RW Size frameSize;
-
-    CV_PROP_RW kinfu::VolumeType volumeType;
 
     /** @brief camera intrinsics */
     CV_PROP_RW Matx33f intr;

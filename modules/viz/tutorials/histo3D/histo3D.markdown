@@ -1,8 +1,6 @@
 Creating a 3D histogram {#tutorial_histo3D}
 ================
 
-@prev_tutorial{tutorial_creating_widgets}
-
 Goal
 ----
 

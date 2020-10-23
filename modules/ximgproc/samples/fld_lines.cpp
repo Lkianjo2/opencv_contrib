@@ -37,9 +37,8 @@ int main(int argc, char** argv)
     //                                     hysteresis procedure in Canny()
     // canny_th2           50            - Second threshold for
     //                                     hysteresis procedure in Canny()
-    // canny_aperture_size 3            - Aperturesize for the sobel operator in Canny().
-    //                                     If zero, Canny() is not applied and the input
-    //                                     image is taken as an edge image.
+    // canny_aperture_size 3             - Aperturesize for the sobel
+    //                                     operator in Canny()
     // do_merge            false         - If true, incremental merging of segments
     //                                     will be perfomred
     int length_threshold = 10;

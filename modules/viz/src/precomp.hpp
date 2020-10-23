@@ -133,8 +133,7 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkLight.h>
-#include <vtkCallbackCommand.h>
-#include <vtkVersion.h>
+#include "vtkCallbackCommand.h"
 
 #if !defined(_WIN32) || defined(__CYGWIN__)
 # include <unistd.h> /* unlink */
@@ -150,11 +149,6 @@
 #include "vtk/vtkTrajectorySource.h"
 #include "vtk/vtkImageMatSource.h"
 
-#if VTK_MAJOR_VERSION >= 9
-typedef vtkIdType const * CellIterT;
-#else
-typedef vtkIdType * CellIterT;
-#endif
 
 #include <opencv2/core.hpp>
 #include <opencv2/viz.hpp>

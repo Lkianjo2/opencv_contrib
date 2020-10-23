@@ -48,7 +48,7 @@ static void tutorial3(bool camera_pov)
         myWindow.setViewerPose(camera_pose);
 
     /// Start event loop.
-    myWindow.spinOnce(500, true);
+    myWindow.spin();
 }
 
 TEST(Viz, tutorial3_global_view)

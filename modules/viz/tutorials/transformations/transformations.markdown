@@ -1,9 +1,6 @@
 Transformations {#tutorial_transformations}
 ===============
 
-@prev_tutorial{tutorial_widget_pose}
-@next_tutorial{tutorial_creating_widgets}
-
 Goal
 ----
 

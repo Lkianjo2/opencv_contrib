@@ -505,13 +505,10 @@ static bool ocl_makeFrameFromDepth(const UMat depth, OutputArrayOfArrays points,
         return false;
 
     // depth truncation can be used in some scenes
-    UMat depthThreshold;
     if(truncateThreshold > 0.f)
-        threshold(smooth, depthThreshold, truncateThreshold * depthFactor, 0.0, THRESH_TOZERO_INV);
-    else
-        depthThreshold = smooth;
+        threshold(depth, depth, truncateThreshold*depthFactor, 0.0, THRESH_TOZERO_INV);
 
-    UMat scaled = depthThreshold;
+    UMat scaled = smooth;
     Size sz = smooth.size();
     points.create(levels, 1, POINT_TYPE);
     normals.create(levels, 1, POINT_TYPE);
@@ -627,16 +624,13 @@ void makeFrameFromDepth(InputArray _depth,
     bilateralFilter(depth, smooth, kernelSize, sigmaDepth*depthFactor, sigmaSpatial);
 
     // depth truncation can be used in some scenes
-    Depth depthThreshold;
     if(truncateThreshold > 0.f)
-        threshold(smooth, depthThreshold, truncateThreshold * depthFactor, 0.0, THRESH_TOZERO_INV);
-    else
-        depthThreshold = smooth;
+        threshold(depth, depth, truncateThreshold, 0.0, THRESH_TOZERO_INV);
 
     // we don't need depth pyramid outside this method
     // if we do, the code is to be refactored
 
-    Depth scaled = depthThreshold;
+    Depth scaled = smooth;
     Size sz = smooth.size();
     pyrPoints.create(levels, 1, POINT_TYPE);
     pyrNormals.create(levels, 1, POINT_TYPE);

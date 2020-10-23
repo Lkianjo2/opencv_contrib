@@ -15,14 +15,7 @@ if(OCV_DEPENDENCIES_FOUND)
 
   ocv_cuda_filter_options()
 
-  if(CUDA_VERSION VERSION_LESS "11.0")
-    ocv_update(OPENCV_CUDA_OPTIONS_opencv_test_cudev "-std=c++11")
-  else()
-    ocv_update(OPENCV_CUDA_OPTIONS_opencv_test_cudev "-std=c++14")
-    ocv_warnings_disable(CMAKE_CXX_FLAGS -Wdeprecated-declarations)
-  endif()
-
-  CUDA_ADD_EXECUTABLE(${the_target} ${OPENCV_TEST_${the_module}_SOURCES} OPTIONS ${OPENCV_CUDA_OPTIONS_opencv_test_cudev})
+  CUDA_ADD_EXECUTABLE(${the_target} ${OPENCV_TEST_${the_module}_SOURCES} OPTIONS -std=c++11)
   ocv_target_link_libraries(${the_target} PRIVATE
       ${test_deps} ${OPENCV_LINKER_LIBS} ${CUDA_LIBRARIES}
   )
