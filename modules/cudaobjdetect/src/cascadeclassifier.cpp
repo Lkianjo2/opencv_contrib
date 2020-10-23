@@ -41,6 +41,7 @@
 //M*/
 
 #include "precomp.hpp"
+#define CUDA_DISABLER //#include "opencv2/objdetect/objdetect_c.h"
 
 using namespace cv;
 using namespace cv::cuda;

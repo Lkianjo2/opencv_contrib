@@ -8,9 +8,9 @@ To turn off building one of these module repositories, set the names in bold bel
 $ cmake -D OPENCV_EXTRA_MODULES_PATH=<opencv_contrib>/modules -D BUILD_opencv_<reponame>=OFF <opencv_source_directory>
 ```
 
-- **alphamat**: Computer Vision based Alpha Matting -- Given an input image and a trimap, generate an alpha matte.
-
 - **aruco**: ArUco and ChArUco Markers -- Augmented reality ArUco marker and "ChARUco" markers where ArUco markers embedded inside the white areas of the checker board.
+
+- **alphamat**: Computer Vision based Alpha Matting -- Given an input image and a trimap, generate an alpha matte.
 
 - **bgsegm**: Background segmentation algorithm combining statistical background image estimation and per-pixel Bayesian segmentation.
 
@@ -34,19 +34,15 @@ $ cmake -D OPENCV_EXTRA_MODULES_PATH=<opencv_contrib>/modules -D BUILD_opencv_<r
 
 - **face**: Face Recognition -- Face recognition techniques: Eigen, Fisher and Local Binary Pattern Histograms LBPH methods.
 
-- **freetype**: Drawing text using freetype and harfbuzz.
-
 - **fuzzy**: Fuzzy Logic in Vision -- Fuzzy logic image transform and inverse; Fuzzy image processing.
 
-- **hdf**: Hierarchical Data Storage -- This module contains I/O routines for Hierarchical Data Format: https://en.m.wikipedia.org/wiki/Hierarchical_Data_Format meant to store large amounts of data.
+- **freetype**: Drawing text using freetype and harfbuzz.
 
-- **julia**: Julia language wrappers with samples and tests.
+- **hdf**: Hierarchical Data Storage -- This module contains I/O routines for Hierarchical Data Format: https://en.m.wikipedia.org/wiki/Hierarchical_Data_Format meant to store large amounts of data.
 
 - **line_descriptor**: Line Segment Extract and Match -- Methods of extracting, describing and latching line segments using binary descriptors.
 
 - **matlab**: Matlab Interface -- OpenCV Matlab Mex wrapper code generator for certain opencv core modules.
-
-- **mcc**: Macbeth Color Chart detector -- Find and return color patch location in MacBeth color calibration charts.
 
 - **optflow**: Optical Flow -- Algorithms for running and evaluating deepflow, simpleflow, sparsetodenseflow and motion templates (silhouette flow).
 

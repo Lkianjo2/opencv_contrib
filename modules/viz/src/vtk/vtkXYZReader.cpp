@@ -77,7 +77,7 @@ int cv::viz::vtkXYZReader::RequestData(vtkInformation*, vtkInformationVector**, 
     }
 
     // Open the input file.
-    std::ifstream fin(this->FileName);
+    ifstream fin(this->FileName);
     if(!fin)
     {
         vtkErrorMacro("Error opening file " << this->FileName);

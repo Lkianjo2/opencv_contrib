@@ -1,9 +1,6 @@
 Pose of a widget {#tutorial_widget_pose}
 ================
 
-@prev_tutorial{tutorial_launching_viz}
-@next_tutorial{tutorial_transformations}
-
 Goal
 ----
 

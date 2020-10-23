@@ -29,11 +29,10 @@ class FastLineDetectorImpl : public FastLineDetector
          *        _                                 hysteresis procedure in Canny()
          * @param _canny_th2           50         - Second threshold for
          *        _                                 hysteresis procedure in Canny()
-         * @param _canny_aperture_size 3          - Aperturesize for the sobel operator in Canny().
-         *                                          If zero, Canny() is not applied and the input
-         *                                          image is taken as an edge image.
+         * @param _canny_aperture_size 3          - Aperturesize for the sobel
+         *        _                                 operator in Canny()
          * @param _do_merge            false      - If true, incremental merging of segments
-         *                                          will be performed
+                                                   will be perfomred
          */
         FastLineDetectorImpl(int _length_threshold = 10, float _distance_threshold = 1.414213562f,
                 double _canny_th1 = 50.0, double _canny_th2 = 50.0, int _canny_aperture_size = 3,
@@ -81,7 +80,7 @@ class FastLineDetectorImpl : public FastLineDetector
 
         double distPointLine(const Mat& p, Mat& l);
 
-        void extractSegments(const std::vector<Point2i>& points, std::vector<SEGMENT>& segments);
+        void extractSegments(const std::vector<Point2i>& points, std::vector<SEGMENT>& segments );
 
         void lineDetection(const Mat& src, std::vector<SEGMENT>& segments_all);
 
@@ -114,7 +113,7 @@ FastLineDetectorImpl::FastLineDetectorImpl(int _length_threshold, float _distanc
     canny_th1(_canny_th1), canny_th2(_canny_th2), canny_aperture_size(_canny_aperture_size), do_merge(_do_merge)
 {
     CV_Assert(_length_threshold > 0 && _distance_threshold > 0 &&
-            _canny_th1 > 0 && _canny_th2 > 0 && _canny_aperture_size >= 0);
+            _canny_th1 > 0 && _canny_th2 > 0 && _canny_aperture_size > 0);
 }
 
 void FastLineDetectorImpl::detect(InputArray _image, OutputArray _lines)
@@ -345,7 +344,7 @@ template<class T>
         pt = T(pt_tmp);
     }
 
-void FastLineDetectorImpl::extractSegments(const std::vector<Point2i>& points, std::vector<SEGMENT>& segments)
+void FastLineDetectorImpl::extractSegments(const std::vector<Point2i>& points, std::vector<SEGMENT>& segments )
 {
     bool is_line;
 
@@ -545,14 +544,8 @@ void FastLineDetectorImpl::lineDetection(const Mat& src, std::vector<SEGMENT>& s
     std::vector<Point2i> points;
     std::vector<SEGMENT> segments, segments_tmp;
     Mat canny;
-    if (canny_aperture_size == 0)
-    {
-        canny = src;
-    }
-    else
-    {
-        Canny(src, canny, canny_th1, canny_th2, canny_aperture_size);
-    }
+    Canny(src, canny, canny_th1, canny_th2, canny_aperture_size);
+
     canny.colRange(0,6).rowRange(0,6) = 0;
     canny.colRange(src.cols-5,src.cols).rowRange(src.rows-5,src.rows) = 0;
 

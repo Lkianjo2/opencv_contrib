@@ -57,7 +57,7 @@ namespace datasets
 {
 
 using namespace std;
-using namespace cv::tinyxml2;
+using namespace tinyxml2;
 
 class TR_svtImp CV_FINAL : public TR_svt
 {

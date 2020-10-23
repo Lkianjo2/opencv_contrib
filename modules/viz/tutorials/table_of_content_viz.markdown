@@ -3,8 +3,6 @@ OpenCV Viz {#tutorial_table_of_content_viz}
 
 -   @subpage tutorial_launching_viz
 
-    *Languages:* C++
-
     *Compatibility:* \> OpenCV 3.0.0
 
     *Author:* Ozan Tonkal
@@ -12,8 +10,6 @@ OpenCV Viz {#tutorial_table_of_content_viz}
     You will learn how to launch a viz window.
 
 -   @subpage tutorial_widget_pose
-
-    *Languages:* C++
 
     *Compatibility:* \> OpenCV 3.0.0
 
@@ -23,8 +19,6 @@ OpenCV Viz {#tutorial_table_of_content_viz}
 
 -   @subpage tutorial_transformations
 
-    *Languages:* C++
-
     *Compatibility:* \> OpenCV 3.0.0
 
     *Author:* Ozan Tonkal
@@ -33,8 +27,6 @@ OpenCV Viz {#tutorial_table_of_content_viz}
 
 -   @subpage tutorial_creating_widgets
 
-    *Languages:* C++
-
     *Compatibility:* \> OpenCV 3.0.0
 
     *Author:* Ozan Tonkal
@@ -42,8 +34,6 @@ OpenCV Viz {#tutorial_table_of_content_viz}
     You will learn how to create your own widgets.
 
 -   @subpage tutorial_histo3D
-
-    *Languages:* C++
 
     *Compatibility:* \> OpenCV 3.0.0
 

@@ -69,7 +69,7 @@ void cv::viz::vtkXYZWriter::WriteData()
     }
 
     vtkDebugMacro(<<"Opening vtk file for writing...");
-    std::ostream *outfilep = new std::ofstream(this->FileName, ios::out);
+    ostream *outfilep = new ofstream(this->FileName, ios::out);
     if (outfilep->fail())
     {
         vtkErrorMacro(<< "Unable to open file: "<< this->FileName);

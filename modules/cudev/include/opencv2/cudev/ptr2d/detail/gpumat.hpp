@@ -54,30 +54,30 @@ template <typename T>
 __host__ GpuMat_<T>::GpuMat_(Allocator* allocator)
     : GpuMat(allocator)
 {
-    flags = (flags & ~CV_MAT_TYPE_MASK) | traits::Type<T>::value;
+    flags = (flags & ~CV_MAT_TYPE_MASK) | DataType<T>::type;
 }
 
 template <typename T>
 __host__ GpuMat_<T>::GpuMat_(int arows, int acols, Allocator* allocator)
-    : GpuMat(arows, acols, traits::Type<T>::value, allocator)
+    : GpuMat(arows, acols, DataType<T>::type, allocator)
 {
 }
 
 template <typename T>
 __host__ GpuMat_<T>::GpuMat_(Size asize, Allocator* allocator)
-    : GpuMat(asize.height, asize.width, traits::Type<T>::value, allocator)
+    : GpuMat(asize.height, asize.width, DataType<T>::type, allocator)
 {
 }
 
 template <typename T>
 __host__ GpuMat_<T>::GpuMat_(int arows, int acols, Scalar val, Allocator* allocator)
-    : GpuMat(arows, acols, traits::Type<T>::value, val, allocator)
+    : GpuMat(arows, acols, DataType<T>::type, val, allocator)
 {
 }
 
 template <typename T>
 __host__ GpuMat_<T>::GpuMat_(Size asize, Scalar val, Allocator* allocator)
-    : GpuMat(asize.height, asize.width, traits::Type<T>::value, val, allocator)
+    : GpuMat(asize.height, asize.width, DataType<T>::type, val, allocator)
 {
 }
 
@@ -91,15 +91,15 @@ template <typename T>
 __host__ GpuMat_<T>::GpuMat_(const GpuMat& m, Allocator* allocator)
     : GpuMat(allocator)
 {
-    flags = (flags & ~CV_MAT_TYPE_MASK) | traits::Type<T>::value;
+    flags = (flags & ~CV_MAT_TYPE_MASK) | DataType<T>::type;
 
-    if (traits::Type<T>::value == m.type())
+    if (DataType<T>::type == m.type())
     {
         GpuMat::operator =(m);
         return;
     }
 
-    if (traits::Depth<T>::value == m.depth())
+    if (DataType<T>::depth == m.depth())
     {
         GpuMat::operator =(m.reshape(DataType<T>::channels, m.rows));
         return;
@@ -111,13 +111,13 @@ __host__ GpuMat_<T>::GpuMat_(const GpuMat& m, Allocator* allocator)
 
 template <typename T>
 __host__ GpuMat_<T>::GpuMat_(int arows, int acols, T* adata, size_t astep)
-    : GpuMat(arows, acols, traits::Type<T>::value, adata, astep)
+    : GpuMat(arows, acols, DataType<T>::type, adata, astep)
 {
 }
 
 template <typename T>
 __host__ GpuMat_<T>::GpuMat_(Size asize, T* adata, size_t astep)
-    : GpuMat(asize.height, asize.width, traits::Type<T>::value, adata, astep)
+    : GpuMat(asize.height, asize.width, DataType<T>::type, adata, astep)
 {
 }
 
@@ -137,7 +137,7 @@ template <typename T>
 __host__ GpuMat_<T>::GpuMat_(InputArray arr, Allocator* allocator)
     : GpuMat(allocator)
 {
-    flags = (flags & ~CV_MAT_TYPE_MASK) | traits::Type<T>::value;
+    flags = (flags & ~CV_MAT_TYPE_MASK) | DataType<T>::type;
     upload(arr);
 }
 
@@ -151,13 +151,13 @@ __host__ GpuMat_<T>& GpuMat_<T>::operator =(const GpuMat_& m)
 template <typename T>
 __host__ void GpuMat_<T>::create(int arows, int acols)
 {
-    GpuMat::create(arows, acols, traits::Type<T>::value);
+    GpuMat::create(arows, acols, DataType<T>::type);
 }
 
 template <typename T>
 __host__ void GpuMat_<T>::create(Size asize)
 {
-    GpuMat::create(asize, traits::Type<T>::value);
+    GpuMat::create(asize, DataType<T>::type);
 }
 
 template <typename T>
@@ -169,14 +169,14 @@ __host__ void GpuMat_<T>::swap(GpuMat_& mat)
 template <typename T>
 __host__ void GpuMat_<T>::upload(InputArray arr)
 {
-    CV_Assert( arr.type() == traits::Type<T>::value );
+    CV_Assert( arr.type() == DataType<T>::type );
     GpuMat::upload(arr);
 }
 
 template <typename T>
 __host__ void GpuMat_<T>::upload(InputArray arr, Stream& stream)
 {
-    CV_Assert( arr.type() == traits::Type<T>::value );
+    CV_Assert( arr.type() == DataType<T>::type );
     GpuMat::upload(arr, stream);
 }
 
@@ -269,15 +269,15 @@ __host__ size_t GpuMat_<T>::elemSize1() const
 template <typename T>
 __host__ int GpuMat_<T>::type() const
 {
-    CV_DbgAssert( GpuMat::type() == traits::Type<T>::value );
-    return traits::Type<T>::value;
+    CV_DbgAssert( GpuMat::type() == DataType<T>::type );
+    return DataType<T>::type;
 }
 
 template <typename T>
 __host__ int GpuMat_<T>::depth() const
 {
-    CV_DbgAssert( GpuMat::depth() == traits::Depth<T>::value );
-    return traits::Depth<T>::value;
+    CV_DbgAssert( GpuMat::depth() == DataType<T>::depth );
+    return DataType<T>::depth;
 }
 
 template <typename T>
@@ -341,7 +341,7 @@ namespace cv {
 
 template<typename _Tp>
 __host__ _InputArray::_InputArray(const cudev::GpuMat_<_Tp>& m)
-    : flags(FIXED_TYPE + CUDA_GPU_MAT + traits::Type<_Tp>::value), obj((void*)&m)
+    : flags(FIXED_TYPE + CUDA_GPU_MAT + DataType<_Tp>::type), obj((void*)&m)
 {}
 
 template<typename _Tp>

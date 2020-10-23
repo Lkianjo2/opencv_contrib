@@ -126,8 +126,6 @@ static const int TIXML2_MAJOR_VERSION = 2;
 static const int TIXML2_MINOR_VERSION = 1;
 static const int TIXML2_PATCH_VERSION = 0;
 
-namespace cv
-{
 namespace tinyxml2
 {
 class XMLDocument;
@@ -2073,7 +2071,6 @@ private:
 
 
 }	// tinyxml2
-}	// cv
 
 #if defined(_MSC_VER)
 #   pragma warning(pop)
